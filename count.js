@@ -20,7 +20,7 @@
 });
 
 // A function to find the common words and output their frequency
-(function results(pageText, common){
+function results(pageText, common){
     var map = {};
     var topResults = [];
     // let's populate our map!
@@ -40,6 +40,32 @@
     }
     // sort frequencies (descending)
     var counts = Object.keys(map); // create a counts array
+    counts.sort(function(a, b){
+        return map[b] - map[a]; //sort keys in descending order
+    });
+    // populate the top 25 words
+    for (int k = 0; i < 26; i++){
+        topResults.push(counts[k]);
+    }
+    // pass top 25 to renderDOM
+    renderDOM(topResults, map);
+}
+
+function renderDOM(results, map){
     
     
-})
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
