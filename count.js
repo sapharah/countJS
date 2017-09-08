@@ -3,7 +3,7 @@
     var common = [];
     var exceptions = ["is", "are", "was", "were"];
     var text = $("body").text();
-    var strippedStr = bodyText.replace(/[^\w\s]/gi, "").replace(/\(.*;?\;/g, "").replace(/\w{20}/ig, "").replace(/[0-9]/g, "").replace(/\s\s+/g, ' ').replace(/(\b(\w{1,1})\b(\W|$))/g, "");
+    var strippedStr = text.replace(/[^\w\s]/gi, "").replace(/\(.*;?\;/g, "").replace(/\w{20}/ig, "").replace(/[0-9]/g, "").replace(/\s\s+/g, ' ').replace(/(\b(\w{1,1})\b(\W|$))/g, "");
     
     //obtain top 100 words
     $.get("https://en.wikipedia.org/wiki/Most_common_words_in_English", function(data){
@@ -17,7 +17,7 @@
         var pageText = strippedStr.toLowerCase().split(/\s/);
         results(pageText, common);
     });
-});
+})();
 
 // A function to find the common words and output their frequency
 function results(pageText, common){
@@ -44,23 +44,26 @@ function results(pageText, common){
         return map[b] - map[a]; //sort keys in descending order
     });
     // populate the top 25 words
-    for (int k = 0; i < 26; i++){
+    for (var k = 0; k < 26; k++){
         topResults.push(counts[k]);
     }
     // pass top 25 to renderDOM
     renderDOM(topResults, map);
 }
 
-function renderDOM(results, map){
-    
-    
+function renderDOM(results, map) {
+  var DOM = $('body').html();
+  //function to escape regex variables
+  function escapeRegex(value) {
+    return value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
+  }
+  for (var i = 0; i < results.length; i++) {
+    DOM = DOM.replace(new RegExp(escapeRegex(results[i]), "ig"), map[results[i]]);
+  }
+
+  // render a new DOM 
+  $('body').html(DOM);
 }
-
-
-
-
-
-
 
 
 
