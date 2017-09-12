@@ -3,30 +3,31 @@
     var common = [];
     var exceptions = ["is", "are", "was", "were"];
     var text = $("body").text();
-    var strippedStr = text.replace(/[^\w\s]/gi, "").replace(/\(.*;?\;/g, "").replace(/\w{20}/ig, "").replace(/[0-9]/g, "").replace(/\s\s+/g, ' ').replace(/(\b(\w{1,1})\b(\W|$))/g, "");
+    var strippedStr = text.replace(/[^\w\s]/gi, "").replace(/\(.*;?\;/g, "").replace(/\w{20}/ig, "").replace(/[0-9]/g, "").replace(/\s\s+/g, ' ').replace(/(\b(\w{1,1})\b(\W|$))/g, ""); 
     
     //obtain top 100 words
     $.get("https://en.wikipedia.org/wiki/Most_common_words_in_English", function(data){
         var response = $("<html />").html(data);
         var table = response.find("table.wikitable");
-        var list = table.find("tr td:nth-child(2)"); // may need a jquery selector, use $("table.wikitable");
+        var list = table.find("tr td:nth-child(2)"); 
         list.each(function(i, item){
             common.push($(item).text());              
         })
         common = exceptions.concat(common);
-        var pageText = strippedStr.toLowerCase().split(/\s/);
+        var pageText = strippedStr.toLowerCase().split(/\s+/);
+        
         results(pageText, common);
     });
 })();
 
-// A function to find the common words and output their frequency
+// A function to find the common words and their frequency
 function results(pageText, common){
     var map = {};
     var topResults = [];
-    // let's populate our map!
+    // let's populate our map with the pageText
     for (var i = 0; i < pageText.length; i++){
         if (map[pageText[i]]){
-            map[pageText[i]]++;
+            map[pageText[i]]+= 1;
         }
         else {
             map[pageText[i]] = 1;
@@ -39,7 +40,7 @@ function results(pageText, common){
         }  
     }
     // sort frequencies (descending)
-    var counts = Object.keys(map); // create a counts array
+    var counts = Object.keys(map); // create a counts array, an array of objects
     counts.sort(function(a, b){
         return map[b] - map[a]; //sort keys in descending order
     });
@@ -47,7 +48,8 @@ function results(pageText, common){
     for (var k = 0; k < 26; k++){
         topResults.push(counts[k]);
     }
-    // pass top 25 to renderDOM
+    
+    // pass top 25 frequently used words to renderDOM
     renderDOM(topResults, map);
 }
 
@@ -58,7 +60,7 @@ function renderDOM(results, map) {
     return value.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
   }
   for (var i = 0; i < results.length; i++) {
-    DOM = DOM.replace(new RegExp(escapeRegex(results[i]), "ig"), map[results[i]]);
+    DOM = DOM.replace(new RegExp("\\b"+escapeRegex(results[i])+"\\b","ig"), map[results[i]]);
   }
 
   // render a new DOM 
